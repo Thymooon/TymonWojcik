@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <script src="puma.js"></script>
+    <script src="tealcar.js"></script>
+  <meta charset="UTF-8">
+  <title>Malarstwo - Galeria</title>
+  <style>
+    body {
+      font-family: "Helvetica", monospace;
+      background-color: #ffffff;
+      color: #000000;
+      margin: 40px;
+      margin-left: 120px;
+    }
+    .edge {
+        margin-left: -100px;
+    }
+
+    .gallery-title {
+      font-size: 18px;
+      font-weight: normal;
+      margin-bottom: 20px;
+      margin-right: auto;
+      margin-left: 0px;
+    }
+    .info-title {
+        font-size: 12px;
+        font-weight: normal;
+       margin-bottom: 20px;
+       margin-right: 40px;
+    }
+    
+    .main-content {
+      display: flex;
+      gap: 10px;            /* Odstęp między tekstem a stage */
+      margin-top: 0px;        /* Odstęp od górnego paska z imieniem */
+      align-items: flex-start; /* Wyrównanie góry tekstu do góry zdjęcia */
+      width: 100%;
+    }
+
+    .left-title {
+      font-size: 24px;
+      flex-shrink: 0;          /* Blokuje kurczenie się tekstu przez flexbox */
+      width: 70px;            /* Stała szerokość kolumny z tekstem */
+      line-height: 78px;        /* Przyjemna dla oka odległość między liniami */
+      margin-top: 0px;
+      margin-left: 20px;
+    }
+
+    .stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 1000px;
+      overflow: visible; /* DODANO: Pozwala obrazkowi wyjść poza kontener, gdy dasz duży margin-left */
+    }
+
+    /* Warstwa 1: Tekst ASCII w tle z płynnym przejściem koloru */
+    #ascii-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      font-size: 5.1px;
+      line-height: 5px;
+      margin: 0;
+      white-space: pre;
+      user-select: none;
+      transition: color 0.5s ease; /* opcjonalne płynne przejście koloru */
+      margin-left: 0px;
+      margin-top: 0px;
+      pointer-events: none; /* Kursor i kliknięcia ignorują tę warstwę */
+    }
+
+    /* Warstwa 2: Przesuwający się kontener maskujący */
+    .img-revealer {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      overflow: hidden;
+      clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    }
+
+    .img-revealer.loaded {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      transition: clip-path 3.5s linear;
+    }
+
+    #view {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 600px;
+      transform: translateX(-100%);
+      transition: none;
+    }
+
+    .img-revealer.loaded #view {
+      transform: translateX(0);
+      transition: transform 0.1s linear;
+    }
+
+    /* Nawigacja */
+    .controls {
+      margin-top: 25px;
+      font-size: 14px;
+      position: relative;
+      z-index: 10; /* Zabezpieczenie przed przykryciem przez warstwy wyżej */
+    }
+
+    .btn {
+      cursor: pointer;
+      color: #0000ff;
+      text-decoration: underline;
+      margin-right: 15px;
+    }
+
+    .btn:hover {
+      color: #ff0000;
+    }
+
+    #counter {
+      margin-right: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div style="display: flex; gap: auto; align-items: center;">
+    <div class="gallery-title">Tymon Wójcik</div>
+    <span class="info-title">tytuł</span>
+    <span class="info-title">wymiar</span>
+    <span class="info-title">technika</span>
+    <span class="info-title">rok</span>
+    <span class="info-title">cena</span>
+  </div>
+    
+  <div class="main-content edge">
+    <div class="left-title">
+      <i>dm<br>
+      me<br>
+      if<br>
+      <u>int<br>
+      ere<br>
+      ste<br>
+      d</u></i><br>
+    </div>
+    
+    <div class="stage">
+      <pre id="ascii-bg"></pre>
+      <div id="revealer" class="img-revealer">
+        <img id="view" src="" alt="">
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <span class="btn" onclick="changeSlide(-1)">[ &lt;&lt; PREV ]</span>
+    <span id="counter" onclick="changeSlide(1)" style="cursor: pointer;">1 / 1</span>
+    <span class="btn" onclick="changeSlide(1)">[ NEXT &gt;&gt; ]</span>
+  </div>
+
+  <script>
+    const images = [
+      "image0.jpg",
+      "Tymon_Wojcik_szybki_samochod_sweatshop_yamaszy_w_Indiach_i_pustostan_na_Zaciszu kopia.jpg"
+    ];
+    
+    const asciiArt = [
+      {
+        stageMarginLeft: "300px",
+        color: "black",
+        text: puma
+      },
+      {
+        stageMarginLeft: "0px",
+        color: "#0089b5",
+        text: tealcar
+      }
+    ];
+
+    let index = 0;
+
+    function loadSlide() {
+      const revealer = document.getElementById("revealer");
+      const img = document.getElementById("view");
+      const ascii = document.getElementById("ascii-bg");
+      
+      revealer.style.transition = "none";
+      revealer.classList.remove("loaded");
+      img.src = images[index];
+
+      // Bezpieczne przypisanie parametrów z obiektu
+      if (asciiArt[index]) {
+        ascii.innerText = asciiArt[index].text;
+        ascii.style.color = asciiArt[index].color || "#000000";
+        
+        // Aplikujemy margines bezpośrednio na kontener ze zdjęciem (.img-revealer)
+        revealer.style.marginLeft = asciiArt[index].stageMarginLeft || "0px";
+      }
+
+      document.getElementById("counter").innerText = (index + 1) + " / " + images.length;
+
+      setTimeout(() => {
+        revealer.classList.add("loaded");
+      }, 50);
+    }
+
+    // NAPRAWIONO: Przywrócono usuniętą wcześniej funkcję nawigacji
+    function changeSlide(direction) {
+      index += direction;
+      if (index < 0) index = images.length - 1;
+      if (index >= images.length) index = 0;
+      loadSlide();
+    }
+
+    loadSlide();
+  </script>
+
+</body>
+</html>
+
