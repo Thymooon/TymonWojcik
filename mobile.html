@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <script>
+      (function() {
+        var isDesktopSize = window.innerWidth > 768;
+        var isMobileUserAgent = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        // Jeśli szerokość jest duża I urządzenie to nie smartfon -> wracaj do wersji desktop
+        if (isDesktopSize && !isMobileUserAgent) {
+          window.location.replace("index.html");
+        }
+      })();
+    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tymon Wójcik - Mobile</title>
+  
+  <!-- Wczytanie zewnętrznych plików z danymi tekstowymi ASCII -->
+  <script src="puma.js"></script>
+  <script src="tealcar.js"></script>
+  <script src="image2.js"></script>
+  <script src="image3.js"></script>
+  <script src="image4.js"></script>
+  <script src="image5.js"></script>
+  <script src="image6.js"></script>
+  <script src="image7.js"></script>
+  <script src="image8.js"></script>
+  <script src="image9.js"></script>
+  <script src="image10.js"></script>
+  <script src="image11.js"></script>
+  <script src="image12.js"></script>
+  <script src="image13.js"></script>
+  <script src="image14.js"></script>
+  <script src="image15.js"></script>
+
+  <style>
+        body {
+          font-family: "Helvetica", monospace;
+          background-color: #ffffff;
+          color: #000000;
+          margin: 0;
+          padding: 20px 15px;
+          box-sizing: border-box;
+          
+          /* Wyśrodkowanie całej zawartości w pionie i poziomie */
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+
+        /* Główny kontener trzymający stałą szerokość całej strony */
+        .container {
+          width: 100%;
+          max-width: 320px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        /* Górny nagłówek wyśrodkowany */
+        .top-header {
+          width: 100%;
+          text-align: right; /* Scentralizowany napis Tymon Wójcik */
+          font-size: 26px;
+          margin-bottom: 8px;
+        }
+
+        /* Tytuł pracy wyśrodkowany */
+        .work-title {
+          width: 100%;
+          text-align: right; /* Scentralizowany tytuł */
+          font-style: italic;
+          font-size: 13px;
+          margin-bottom: 25px;
+          line-height: 1.2;
+          min-height: 28px;
+        }
+
+        /* Sekcja środkowa (menu + obrazek) */
+        .main-content {
+          display: flex;
+          flex-direction: row;
+          gap: 12px;
+          align-items: flex-start;
+          justify-content: center;
+        }
+
+        /* Boczne słowa (dm me if...) */
+        .side-menu {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          font-style: italic;
+          font-size: 14px;
+          padding-top: 30px;
+          flex-shrink: 0;
+        }
+
+        /* Ramka kadrująca ASCII */
+        .stage {
+          position: relative;
+          width: 275px;
+          height: 375px;
+          overflow: hidden;
+          background-color: #ffffff;
+        }
+
+        /* Warstwa ASCII */
+        #ascii-bg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 1;
+          font-size: 5px;
+          line-height: 5px;
+          margin: 0;
+          white-space: pre;
+          user-select: none;
+          pointer-events: none;
+        }
+
+        /* Obrazek w centrum ramki */
+        .img-revealer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 2;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        #view {
+          max-width: 78%;
+          max-height: 80%;
+          object-fit: contain;
+          display: block;
+        }
+
+        /* Przycisk nawigacji w dolnej części kadru */
+        .controls {
+          position: absolute;
+          bottom: 10px;
+          left: 0;
+          width: 100%;
+          z-index: 10;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 15px;
+          font-size: 13px;
+          background-color: rgba(255, 255, 255, 0.75);
+          padding: 4px 0;
+        }
+
+        .btn {
+          cursor: pointer;
+          color: #0000ff;
+          text-decoration: underline;
+        }
+
+        .btn:hover {
+          color: #ff0000;
+        }
+
+        /* Scentralizowany dolny pasek z informacjami */
+        .footer-info {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          font-size: 11px;
+          margin-top: 25px;
+          border-top: 1px dashed #cccccc;
+          padding-top: 10px;
+          text-align: center;
+        }
+      </style>
+</head>
+<body>
+
+  <!-- Nagłówek oraz tytuł pracy -->
+  <div class="container">
+  <div class="top-header">Tymon Wójcik</div>
+  <div id="info-name" class="work-title"></div>
+
+  <!-- Główny układ mobilny -->
+  <div class="main-content">
+    <div class="side-menu">
+      <span>dm</span>
+      <span>me</span>
+      <span>if</span>
+      <span><u>int</u></span>
+      <span><u>ere</u></span>
+      <span><u>ste</u></span>
+      <span><u>d</u></span>
+    </div>
+
+    <!-- Przycięty obszar z ASCII oraz JPG -->
+    <div class="stage">
+      <pre id="ascii-bg"></pre>
+
+      <div class="img-revealer">
+        <img id="view" src="" alt="">
+      </div>
+
+      <div class="controls">
+        <span class="btn" onclick="changeSlide(-1)">[ &lt;&lt; PREV ]</span>
+        <span id="counter" onclick="changeSlide(1)" style="cursor: pointer;">1 / 1</span>
+        <span class="btn" onclick="changeSlide(1)">[ NEXT &gt;&gt; ]</span>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Parametry dolne (Wymiar, Technika, Rok, Status) -->
+  <div class="footer-info">
+    <span id="info-dimensions"></span>
+    <span id="info-technique"></span>
+    <span id="info-year"></span>
+    <span id="info-price"></span>
+  </div>
+
+  <script>
+    // Dokładnie te same tablice co w wersji desktop
+    const images = [
+      "image0.jpg",
+      "IMG_4089.jpg",
+      "IMG_4093wersjha22.jpg",
+      "dyptyk-z-oddali.jpg",
+      "Tymon_Wojcik_szybki_samochod_sweatshop_yamaszy_w_Indiach_i_pustostan_na_Zaciszu_kopia.jpg",
+      "image2.jpg",
+      "image3.jpg",
+      "image4.jpg",
+      "image5.jpg",
+      "image6.jpg",
+      "image7.jpg",
+      "image8.jpg",
+      "image9.jpg",
+      "image10.jpg",
+      "image11.jpg",
+      "image12.jpg",
+      "image13.jpg",
+      "image14.jpg",
+      "image15.jpg"
+    ];
+    
+    const asciiArt = [
+      {
+        name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji",
+        dimensions: "70 x 125 cm (cały dyptyk)",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: puma
+      },
+      {
+        name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji (cz.1)",
+        dimensions: "70 x 45 cm",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "nd",
+        color: "black",
+        text: puma
+      },
+      {
+        name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji (cz.2)",
+        dimensions: "70 x 70 cm",
+        technique: "olej na płótnie",
+        year: "2026",
+        price: "nd",
+        color: "black",
+        text: puma
+      },
+      {
+        name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji",
+        dimensions: "70 x 125 cm",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: puma
+      },
+      {
+        name: "Szybki samochód, Sweatshop yamaszy w Indiach i pustostan na Zaciszu",
+        dimensions: "100 x 70 cm",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: tealcar
+      },
+      {
+        name: "Gonitwa cyfrowych aut, wizerunki klaunów i koło fortuny z minionkiem z nadmorskiego sezonowego salonu hazardu",
+        dimensions: "100 x 95 cm",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: image2
+      },
+      {
+        name: "Samochodzik w mieście Sega",
+        dimensions: "140 x 80 cm",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: image3
+      },
+      {
+        name: "Pieniądze, przydrożny krzyż na Zaciszu, cyfrowy pachołek",
+        dimensions: "120 x 85 cm",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: image4
+      },
+      {
+        name: "Stoję przed automatem z pluszowymi zabawkami",
+        dimensions: "90 x 60 cm",
+        technique: "olej na płótnie",
+        year: "2025",
+        price: "soon",
+        color: "black",
+        text: image5
+      },
+      {
+        name: "One clip the end",
+        dimensions: "110 x 80 cm",
+        technique: "olej na płotnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: image6
+      },
+      {
+        name: "Szmal 2",
+        dimensions: "120 x 40 cm",
+        technique: "olej na płótnie",
+        year: "2026",
+        price: "sold",
+        color: "black",
+        text: image7
+      },
+      {
+        name: "Szmal",
+        dimensions: "130 x 80 cm",
+        technique: "olej na płótnie",
+        year: "2026",
+        price: "sold",
+        color: "black",
+        text: image8
+      },
+      {
+        name: "Żetony",
+        dimensions: "140 x 90 cm",
+        technique: "olej na płótnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: image9
+      },
+      {
+        name: "10ZŁ",
+        dimensions: "40 x 20 cm",
+        technique: "olej na płótnie",
+        year: "2026",
+        price: "sold",
+        color: "black",
+        text: image10
+      },
+      {
+        name: "Młody ołbińczyk siedzi na końcu autobusu tak jak jego ojciec",
+        dimensions: "75 x 110 cm",
+        technique: "olej na płótnie",
+        year: "2026",
+        price: "soon",
+        color: "black",
+        text: image11
+      },
+      {
+        name: "54 29 20,352N 18 33 56,22E",
+        dimensions: "120 x 90 cm",
+        technique: "olej na płótnie",
+        year: "2025",
+        price: "soon",
+        color: "black",
+        text: image12
+      },
+      {
+        name: "Does death come alone or in eager reinforcements",
+        dimensions: "100 x 140 cm",
+        technique: "olej na płótnie",
+        year: "2025",
+        price: "sold",
+        color: "black",
+        text: image13
+      },
+      {
+        name: "Bez tytułu",
+        dimensions: "140 x 130 cm",
+        technique: "olej na płótnie",
+        year: "2025",
+        price: "soon",
+        color: "black",
+        text: image14
+      },
+      {
+        name: "Bez tytułu",
+        dimensions: "190 x 120",
+        technique: "olej na płótnie",
+        year: "2024",
+        price: "soon",
+        color: "black",
+        text: image15
+      }
+    ];
+
+    let index = 0;
+
+    function loadSlide() {
+      const img = document.getElementById("view");
+      const ascii = document.getElementById("ascii-bg");
+      const nameEl = document.getElementById("info-name");
+      const dimensionsEl = document.getElementById("info-dimensions");
+      const techniqueEl = document.getElementById("info-technique");
+      const yearEl = document.getElementById("info-year");
+      const priceEl = document.getElementById("info-price");
+
+      img.src = images[index];
+
+      if (asciiArt[index]) {
+        ascii.innerText = asciiArt[index].text;
+        ascii.style.color = asciiArt[index].color || "#000000";
+        
+        nameEl.innerText = asciiArt[index].name || "";
+        dimensionsEl.innerText = asciiArt[index].dimensions || "";
+        techniqueEl.innerText = asciiArt[index].technique || "";
+        yearEl.innerText = asciiArt[index].year || "";
+        priceEl.innerText = asciiArt[index].price || "";
+      }
+
+      document.getElementById("counter").innerText = (index + 1) + " / " + images.length;
+    }
+
+    function changeSlide(direction) {
+      index += direction;
+      if (index < 0) index = images.length - 1;
+      if (index >= images.length) index = 0;
+      loadSlide();
+    }
+
+    loadSlide();
+  </script>
+</body>
+</html>
