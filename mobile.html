@@ -459,5 +459,19 @@
 
     loadSlide();
   </script>
+    <script>
+      // Tutaj masz swoje dotychczasowe funkcje (loadSlide, changeSlide itp.)
+
+      // KOD PRELOADUJĄCY:
+      function preloadImages() {
+        images.forEach((src) => {
+          const img = new Image();
+          img.src = src;
+        });
+      }
+
+      // Uruchomienie preloadu po załadowaniu strony
+      window.addEventListener('load', preloadImages);
+    </script>
 </body>
 </html>
