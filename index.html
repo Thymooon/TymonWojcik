@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+    <script>
+      (function() {
+        // Sprawdzamy szerokość ekranu (np. poniżej 768px to urządzenia mobilne)
+        // oraz opcjonalnie czy w userAgent znajduje się mobilne urządzenie
+        var isMobileSize = window.innerWidth <= 768;
+        var isMobileUserAgent = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        if (isMobileSize || isMobileUserAgent) {
+          window.location.replace("mobile.html");
+        }
+      })();
+    </script>
     <script src="puma.js"></script>
     <script src="tealcar.js"></script>
     <script src="image2.js"></script>
@@ -91,11 +103,18 @@
       pointer-events: none; /* Kursor i kliknięcia ignorują tę warstwę */
     }
 
-    /* Warstwa 2: kontener ze zdjęciem (bez animacji odsłaniania) */
+    /* Warstwa 2: Przesuwający się kontener maskujący */
     .img-revealer {
       position: relative;
       z-index: 2;
       width: 100%;
+      overflow: hidden;
+      clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+    }
+
+    .img-revealer.loaded {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      transition: clip-path 0.05s linear;
     }
 
     #view {
@@ -103,6 +122,13 @@
       width: auto;
       max-width: 100%;
       max-height: 550px;
+      transform: translateX(-100%);
+      transition: none;
+    }
+
+    .img-revealer.loaded #view {
+      transform: translateX(0);
+      transition: transform 0.05s linear;
     }
 
     /* Nawigacja */
@@ -400,6 +426,8 @@
       const yearEl = document.getElementById("info-year");
       const priceEl = document.getElementById("info-price");
       
+      revealer.style.transition = "none";
+      revealer.classList.remove("loaded");
       img.src = images[index];
 
       // Bezpieczne przypisanie parametrów z obiektu
@@ -419,8 +447,13 @@
       }
 
       document.getElementById("counter").innerText = (index + 1) + " / " + images.length;
+
+      setTimeout(() => {
+        revealer.classList.add("loaded");
+      }, 50);
     }
 
+    // NAPRAWIONO: Przywrócono usuniętą wcześniej funkcję nawigacji
     function changeSlide(direction) {
       index += direction;
       if (index < 0) index = images.length - 1;
@@ -433,3 +466,4 @@
 
 </body>
 </html>
+
