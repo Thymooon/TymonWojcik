@@ -1,0 +1,721 @@
+/* =====================================================================
+   PORTFOLIO TYMON WÓJCIK — style
+   ---------------------------------------------------------------------
+   JAK CZYTAĆ TEN PLIK (jedno miejsce do przesuwania rzeczy):
+
+   1) Wszystkie wymiary liczone są w "pikselach makiety 375×812"
+      (ekran iPhone'a X/11/12/13 mini). 1 jednostka = 1 px na makiecie.
+      Przeliczniki:
+        --ux  skala POZIOMA  (375 px szerokości makiety = 1)
+        --uy  skala PIONOWA  (812 px wysokości makiety = 1)
+      Bo obie skale są proporcjonalne, układ sam się skaluje na każdy
+      telefon — na wyższym ekranie odstępy pionowe rosną, na niższym maleją,
+      a szerokości rosną/maleją razem z szerokością ekranu.
+
+   2) W regułach każda liczba występuje w formie:
+        calc(<NAZWA> * var(--uy))   -> wymiar pionowy
+        calc(<NAZWA> * var(--ux))   -> wymiar poziomy / wielkość liter
+      Czyli przesuwanie = zmiana jednej liczby w sekcji ":root" poniżej.
+      Nic nie trzeba szukać po pliku.
+
+   3) GDZIE JEST NAPIS "o pracy" (ekrany A i D):
+      jego pozycję wyznacza pionowy stos w .gallery-content:
+        --gallery-top        oddech nad obrazem (pod nagłówkiem)
+        --artwork-height     wysokość pola obrazu
+        --artwork-gap        odstęp obraz -> "o pracy"      <== przesuwanie w pionie
+        --about-link-height  wysokość pola napisu (obszar klikalny)
+        --about-link-gap     odstęp "o pracy" -> nawigator
+        --navigator-height   wysokość rzędu nawigatora
+        --navigator-gap      oddech pod nawigatorem
+      Sam napis jest wyśrodkowany w swoim polu (justify-content: center),
+      więc przesuwasz POLE, nie literki. Chcesz napis wyżej -> zmniejsz
+      --artwork-gap. Chcesz większy obszar klikalny -> zwiększ
+      --about-link-height (napis zostaje w środku, nawigator jedzie w dół).
+
+   4) WIELKOŚĆ SAMEGO NAPISU "o pracy":
+        --fs-about-link      tylko wielkość liter; NIE przesuwa niczego
+                             (napis jest wyśrodkowany w swoim polu, więc
+                             rośnie w obie strony od środka).
+                             Liczona od SZEROKOŚCI ekranu: 16 = 16 px przy
+                             szerokości 375 px, ~17,6 px przy 412 px.
+                             Pogrubienie / podkreślenie: w regule .about-link
+                             (właściwości font-weight / text-decoration).
+      Gdybyś chciał inny rozmiar tylko na ekranie D ("inne prace"),
+      dopisz po regule .about-link:
+        #other-gallery-screen .about-link { font-size: calc(14 * var(--ux)); }
+
+   5) NAGŁÓWEK (ekrany A i D) — "menu | Tymon Wójcik | en/pl":
+        --screen-pad-x        globalny margines boczny ekranów
+        --header-inset-x      ile DODATKOWO odsunąć nagłówek od tego marginesu
+                              (faktyczny margines = --screen-pad-x + ta liczba).
+                              + => menu i en/pl odjeżdżają od krawędzi, a oba
+                              odstępy między napisami maleją.
+        --header-gap-x        minimalny odstęp menu | brand | en/pl (bezpiecznik
+                              na wypadek bardzo dużych liter; normalnie 0).
+        --header-brand-shift  przesuwa TYLKO napis "Tymon Wójcik":
+                              + => w prawo (menu–brand rośnie, brand–en/pl maleje),
+                              - => w lewo (odwrotnie). 0 = idealny środek.
+      Uwaga: przy brandzie na środku i napisach przy krawędziach odstępy są
+      wypadkową szerokości ekranu — dlatego kontrolujesz je przez
+      --header-inset-x (symetrycznie) i --header-brand-shift (asymetrycznie).
+
+   6) TYTUŁ PRACY (ekran B) łamie się sam — app.js -> renderTitle:
+        • mieści się w jednej linijce  -> 1 linijka
+        • nie mieści się              -> 2 linijki, podzielone "po równo"
+        • nadal nie                   -> 3 linijki, też "po równo"
+        • powyżej 3                   -> app.js przymyka litery (--title-scale),
+                                         żeby tytuł nigdy nie został ucięty
+      Pole ma STAŁĄ wysokość 3 linijek, więc tytuł na 1 lub 2 linijkach NIE
+      przesuwa techniki, opisu ani stopki. Wymuszone łamanie: znak "|" w tytule,
+      np. title: "Emigracja zarobkowa | mojej matki" w data/works.js.
+
+   7) LUPA OBRAZU (ekrany A i D) — tap = przybliżenie, tap = powrót:
+        --zoom-factor   ile razy większy obraz po tapnięciu (2 = 200%)
+        --zoom-ms       czas najazdu i powrotu (ms); 0 = bez animacji
+      Jedno tapnięcie w obraz przybliża go w miejscu palca, drugie tapnięcie
+      wraca do 1×, a przeciągnięcie palcem po powiększeniu panoramuje obraz
+      (punkt, w który tapnąłeś, zostaje zaczepieniem). Przesunięcie jest
+      ograniczone do krawędzi obrazu — nigdy nie odsłania białego tła pola.
+      Gesty i geometria: app.js, sekcja "Lupa obrazu"; tu tylko wygląd.
+      OSTROŚĆ: gdy palec się rusza i gdy trwa animacja, app.js używa
+      translate3d + will-change (płynność, warstwa GPU). Po puszczeniu palca
+      i po zakończeniu animacji wraca do zwykłego translate() i zdejmuje
+      will-change — dopiero wtedy przeglądarka maluje obraz w skali
+      powiększenia, czyli próbkuje z pełnej rozdzielczości pliku. Trwałe
+      will-change: transform kazałoby jej tylko rozciągnąć bitmapę zrobioną
+      dla 1× i obraz byłby mniej ostry niż natywny zoom przeglądarki.
+      ROZMIAR PLIKU: 1 piksel pliku powinien przypadać na ~1 piksel ekranu
+      przy największym zoomie. Obraz na ekranie ma ~303 CSS px szerokości,
+      więc potrzebny długi bok ≈ 303 × DPR × --zoom-factor:
+        zoom 2 (Mac, DPR 2)     -> ~1200 px
+        zoom 3 (iPhone, DPR 3)  -> ~2700 px
+      --zoom-factor = 2 na desktopie, 3 na dotyku (patrz @media (pointer: coarse)
+      niżej), więc dla telefonu celujemy w ~2700 px długiego boku. Pliki WebP
+      w galerii głównej mają 3195–3385 px (z zapasem), a mniejsze
+      (boja 1439, szybki-samochod 1660, gonitwa 1549) przy 3× będą trochę
+      miększe. Malarstwo bez ostrych krawędzi znosi niedobór pikseli lepiej
+      niż zdjęcie architektury.
+   ===================================================================== */
+
+:root {
+  --ux: calc(100cqw / 375);
+  --uy: calc(100cqh / 812);
+  --link-color: #0b1e3b;
+  --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  /* ===================================================================
+     STEROWANIE UKŁADEM — edytuj TYLKO liczby w tej sekcji.
+     Jednostka: 1 = 1 px na makiecie 375×812. Zwiększasz => element rośnie
+     / przesuwa się w prawo (oś X) albo w dół (oś Y).
+     =================================================================== */
+
+  /* --- wspólne dla wszystkich ekranów --- */
+  --screen-pad-x: 24;        /* margines boczny ekranów */
+  --screen-pad-y: 24;        /* margines górny i dolny ekranów */
+
+  /* --- nagłówek (ekrany A i D): menu / brand / en --- */
+  --header-gap: 1;          /* odstęp pod nagłówkiem */
+  --header-inset-x: 12;      /* ILE DODATKOWO odsunąć nagłówek od marginesu:
+                               faktyczny margines = --screen-pad-x + ta liczba.
+                               + => menu i en/pl odjeżdżają od krawędzi ekranu */
+  --header-gap-x: 0;        /* minimalny odstęp menu | brand | en/pl (bezpiecznik
+                               na wypadek dużych liter; zwykle nieaktywny) */
+  --header-brand-shift: 0;  /* przesuwa sam napis "Tymon Wójcik":
+                               + => w prawo (odstęp menu–brand ROŚNIE,
+                                     brand–en/pl MALEJE), - => odwrotnie */
+
+  /* --- ekran A i D: pionowy stos obraz -> "o pracy" -> nawigator --- */
+  --gallery-top: 50;         /* oddech nad obrazem (liczony od nagłówka) */
+  --artwork-height: 510;     /* wysokość pola obrazu (nie jego proporcji!) */
+  --artwork-gap: 10;         /* odstęp: obraz -> "o pracy" */
+  --about-link-height: 80;   /* wysokość pola napisu "o pracy" (klikalne) */
+  --about-link-pad-y: 12;    /* "luz" dookoła liter = obszar dotyku (dotyk!) */
+  --about-link-indent: 0;    /* przesunięcie napisu w prawo (+)/lewo (-) */
+  --about-link-gap: 10;      /* odstęp: "o pracy" -> nawigator */
+  --navigator-height: 70;    /* wysokość rzędu nawigatora */
+  --navigator-gap: 40;       /* oddech pod nawigatorem */
+  --nav-gap: 20;             /* odstęp między strzałkami a licznikiem [1/2] */
+
+  /* --- lupa obrazu (ekrany A i D): tap = przybliżenie, tap = powrót --- */
+  --zoom-factor: 2;          /* ile razy większy obraz po tapnięciu (2 = 200%);
+                                czytane przez app.js (sekcja "Lupa obrazu").
+                                Na dotyku (telefon/tablet) nadpisane na 3 —
+                                patrz @media (pointer: coarse) niżej. */
+  --zoom-ms: 260;            /* czas najazdu i powrotu (ms); 0 = bez animacji */
+
+  /* --- wielkości liter (skala pozioma) --- */
+  --fs-header: 18;           /* menu / brand / en / górne paski */
+  --fs-about-link: 18;       /* "o pracy" — TYLKO wielkość liter, nic nie przesuwa */
+  --fs-counter: 18;          /* licznik [1/2] */
+  --fs-about-title: 18;      /* tytuł pracy na ekranie B */
+  --fs-about-technique: 14;  /* technika */
+  --fs-body: 15;             /* opis pracy, wymiary, rok */
+  --fs-bio: 15;              /* bio */
+  --fs-contact: 14;          /* napisy na Kontakcie */
+
+  /* --- automatyczne dopasowanie tytułu na B (nie ruszać ręcznie) --- */
+  --title-scale: 1;          /* 1 = litery w nominalnym rozmiarze. app.js zmniejsza
+                                ten mnożnik tylko wtedy, gdy tytuł nie mieści się
+                                w 3 linijkach (awaria, nie codzienność) */
+
+  /* --- strzałki --- */
+  --back-arrow-size: 58;     /* szerokość strzałki "wstecz" */
+  --back-arrow-gap: 10;      /* odstęp strzałki "wstecz" od tego, co obok */
+  --nav-arrow-size: 24;      /* szerokość strzałek nawigatora */
+  --nav-btn-pad-y: 8;        /* wewnętrzny "luz" przycisku nawigatora (dotyk) */
+  --nav-btn-pad-x: 12;
+
+  /* --- ekran B (o pracy) --- */
+  --about-top-gap: 30;       /* odstęp pod strzałką "wstecz" */
+  --about-title-gap: 10;     /* tytuł -> technika */
+  --about-technique-gap: 30; /* technika -> opis */
+  --about-technique-height: 20; /* wysokość linii techniki */
+  --about-description-gap: 30; /* opis -> wymiary/rok */
+  --about-footer-gap: 40;    /* wymiary/rok -> dół ekranu */
+
+  /* --- ekran C (menu) --- */
+  --menu-top-gap: 50;        /* odstęp pod strzałką "wstecz" */
+  --menu-item-gap: 50;       /* odstęp między napisami menu */
+  --menu-indent: 1;         /* wcięcie napisów od lewej krawędzi */
+  --menu-item-width: 200;    /* szerokość napisu w menu */
+
+  /* --- ekran E (bio) --- */
+  --bio-top-gap: 20;         /* odstęp pod strzałką "wstecz" */
+  --bio-bottom-gap: 40;      /* oddech pod tekstem */
+
+  /* --- ekran F (kontakt) --- */
+  --contact-pad-y: 40;       /* górny i dolny margines ekranu */
+  --contact-arrow-gap: 60;   /* odstęp pod strzałką */
+  --contact-arrow-indent: 0; /* strzałka "wstecz": + => w prawo od marginesu */
+  --contact-link-gap: 1;    /* minimalny odstęp między napisami */
+}
+
+@supports not (container-type: size) {
+  :root {
+    --ux: calc(100vw / 375);
+    --uy: calc(100svh / 812);
+  }
+}
+
+/* ---------------------------------------------------------------------
+   LUPA NA DOTYKU (telefon / iPad): 3× zamiast 2×.
+   Na małym ekranie 2× to za mało, żeby zobaczyć fakturę farby, a 3× jeszcze
+   nie rozmazuje obrazu na Retinie (potrzebny długi bok ≈ 2700 px — większość
+   plików w galerii głównej tyle ma). Desktop (mysz) zostaje przy 2×.
+   app.js czyta tę samą zmienną, więc nic więcej nie trzeba zmieniać.
+   --------------------------------------------------------------------- */
+@media (pointer: coarse) {
+  :root {
+    --zoom-factor: 3;
+  }
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100svh;
+  overflow: hidden;
+  background-color: #fff;
+  font-family: var(--font-family);
+  color: #111;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stage {
+  width: 100vw;
+  height: 100svh;
+  container-type: size;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: calc(var(--screen-pad-y) * var(--uy)) calc(var(--screen-pad-x) * var(--ux));
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* minimalny odstęp między menu | brand | en/pl — normalnie 0,
+     bo odległości wyznacza szerokość ekranu i --header-inset-x */
+  column-gap: calc(var(--header-gap-x) * var(--ux));
+  font-size: calc(var(--fs-header) * var(--ux));
+  line-height: 1.2;
+  margin-bottom: calc(var(--header-gap) * var(--uy));
+}
+
+.header a, .header button {
+  color: var(--link-color);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+}
+
+.header .brand {
+  font-weight: bold;
+  color: #111;
+  text-decoration: none;
+  /* asymetria odstępów menu–brand / brand–en/pl (0 = idealny środek) */
+  transform: translateX(calc(var(--header-brand-shift) * var(--ux)));
+}
+
+/* Ekrany z obrazem na pełną szerokość (A: galeria, D: inne prace) */
+#gallery-screen,
+#other-gallery-screen {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#gallery-screen .header,
+#gallery-screen .about-link-container,
+#gallery-screen .navigator,
+#other-gallery-screen .header,
+#other-gallery-screen .about-link-container,
+#other-gallery-screen .navigator {
+  padding-left: calc(var(--screen-pad-x) * var(--ux));
+  padding-right: calc(var(--screen-pad-x) * var(--ux));
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Nagłówek: własny margines boczny = globalny (--screen-pad-x) + --header-inset-x.
+   Reguła jest po powyższej, więc nadpisuje jej padding (ta sama specyficzność). */
+#gallery-screen .header,
+#other-gallery-screen .header {
+  padding-left: calc((var(--screen-pad-x) + var(--header-inset-x)) * var(--ux));
+  padding-right: calc((var(--screen-pad-x) + var(--header-inset-x)) * var(--ux));
+}
+
+/* Gallery Content */
+.gallery-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: calc(var(--gallery-top) * var(--uy));
+  width: 100%;
+}
+
+.artwork-container {
+  width: 100%;
+  /* wysokość pola obrazu — sterowana z :root */
+  height: calc(var(--artwork-height) * var(--uy));
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Wyśrodkowanie obrazu w stałym polu */
+  margin-bottom: calc(var(--artwork-gap) * var(--uy));
+  /* LUPA (sekcja "Lupa obrazu" w app.js): powiększony obraz nie wychodzi
+     poza pole, a gesty czytamy sami — bez przewijania i bez natywnego zoomu. */
+  overflow: hidden;
+  touch-action: none;
+  cursor: zoom-in;
+}
+
+.artwork-container.is-zoomed {
+  cursor: zoom-out;
+}
+
+.artwork-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  /* LUPA: powiększanie "w miejscu palca" (transform-origin w lewym górnym
+     rogu obrazu = cała matematyka to jedno mnożenie w app.js). */
+  transform-origin: 0 0;
+  -webkit-touch-callout: none;   /* bez natywnego menu "Zapisz obraz" */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Animacja i warstwa GPU TYLKO na czas tapnięcia. app.js zdejmuje tę klasę po
+   zakończeniu animacji (i po puszczeniu palca), bo trwałe
+   will-change: transform / translate3d każą przeglądarce rozciągnąć bitmapę
+   namalowaną dla 1× — powiększenie byłoby wtedy mniej ostre niż natywny zoom
+   przeglądarki. Po zdjęciu klasy obraz jest malowany w skali powiększenia,
+   czyli próbkowany z pełnej rozdzielczości pliku. */
+.artwork-image.is-zooming {
+  transition: transform calc(var(--zoom-ms) * 1ms) cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .artwork-image.is-zooming {
+    transition: none;
+  }
+}
+
+
+.about-link-container {
+  height: calc(var(--about-link-height) * var(--uy));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: calc(var(--about-link-gap) * var(--uy));
+  text-align: center;
+}
+
+.about-link {
+  /* "font: inherit" MUSI być pierwsze — resetuje stylu przycisku i zeruje
+     ustawione wcześniej font-size/font-weight (kolejność w regule ma znaczenie) */
+  font: inherit;
+  color: var(--link-color);
+  text-decoration: underline;
+  font-size: calc(var(--fs-about-link) * var(--ux));
+  font-weight: bold;
+  /* obszar dotyku: sam tekst jest niski, padding powiększa go do ~44 jednostek */
+  padding: calc(var(--about-link-pad-y) * var(--uy)) 0;
+  /* przesunięcie w poziomie: --about-link-indent (+ w prawo, - w lewo) */
+  transform: translateX(calc(var(--about-link-indent) * var(--ux)));
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.navigator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--nav-gap) * var(--ux));
+  font-size: calc(var(--fs-counter) * var(--ux));
+  height: calc(var(--navigator-height) * var(--uy));
+  margin-bottom: calc(var(--navigator-gap) * var(--uy));
+}
+
+
+.nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: calc(var(--nav-btn-pad-y) * var(--uy)) calc(var(--nav-btn-pad-x) * var(--ux));
+  display: flex;
+  align-items: center;
+}
+
+.nav-btn img {
+  width: calc(var(--nav-arrow-size) * var(--ux));
+  height: auto;
+  display: block;
+}
+
+.nav-btn.next img {
+  transform: scaleX(-1);
+}
+
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.counter {
+  color: var(--link-color);
+  text-decoration: underline;
+  font-size: calc(var(--fs-counter) * var(--ux));
+  font-weight: bold;
+}
+
+/* Screen C: Menu */
+.menu-screen {
+  background-image: url('img/background/menutlo.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.menu-top-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: calc(var(--menu-top-gap) * var(--uy));
+}
+
+.menu-links-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--menu-item-gap) * var(--uy));
+  padding-left: calc(var(--menu-indent) * var(--ux));
+}
+
+.menu-item-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.menu-item-btn img {
+  width: calc(var(--menu-item-width) * var(--ux));
+  height: auto;
+  display: block;
+}
+
+/* Screen E: Bio */
+.bio-screen {
+  background-image: url('img/background/biotlo.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.bio-text {
+  font-size: calc(var(--fs-bio) * var(--ux));
+  line-height: 1.6;
+  text-align: justify;
+  color: #111;
+  flex: 1;
+  overflow-y: auto;
+  margin-top: calc(var(--bio-top-gap) * var(--uy));
+  margin-bottom: calc(var(--bio-bottom-gap) * var(--uy));
+  font-weight: bold;
+}
+
+
+.about-top-bar {
+  display: flex;
+  align-items: center;
+  font-size: calc(var(--fs-header) * var(--ux));
+  color: var(--link-color);
+  margin-bottom: calc(var(--about-top-gap) * var(--uy));
+}
+
+.back-arrow {
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: calc(var(--back-arrow-gap) * var(--ux));
+}
+
+.back-arrow img {
+  width: calc(var(--back-arrow-size) * var(--ux));
+  height: auto;
+}
+
+.about-title-block {
+  font-style: italic;
+  font-weight: bold;
+  /* --title-scale = 1 (wyjątkowo zmniejszane przez app.js, gdy tytuł nie mieści
+     się w 3 linijkach — normalnie nic tego nie rusza) */
+  font-size: calc(var(--fs-about-title) * var(--title-scale, 1) * var(--ux));
+  line-height: 1.3;
+  /* STAŁA wysokość = 3 linijki: tytuł na 1 lub 2 linijkach NIE przesuwa
+     techniki, opisu ani stopki (spec §3B). */
+  height: calc(3 * 1.3 * var(--fs-about-title) * var(--title-scale, 1) * var(--ux));
+  overflow: hidden;
+  /* łamanie: app.js ustawia optymalne <br>; text-wrap: balance to zapas,
+     gdyby JS nie wystartował (nowsze Safari/Chrome i tak złamią "po równo"). */
+  text-wrap: balance;
+  overflow-wrap: normal;
+  margin-bottom: calc(var(--about-title-gap) * var(--uy));
+  color: #111;
+}
+
+.about-technique {
+  font-size: calc(var(--fs-about-technique) * var(--ux));
+  color: #555;
+  margin-bottom: calc(var(--about-technique-gap) * var(--uy));
+  height: calc(var(--about-technique-height) * var(--uy));
+}
+
+.about-description {
+  font-size: calc(var(--fs-body) * var(--ux));
+  line-height: 1.5;
+  text-align: justify;
+  color: #222;
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: calc(var(--about-description-gap) * var(--uy));
+}
+
+.about-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(var(--fs-body) * var(--ux));
+  color: #111;
+  margin-bottom: calc(var(--about-footer-gap) * var(--uy));
+}
+
+/* Screen F: Kontakt — układ pionowy, czytany od dołu do góry (spec §2) */
+.contact-screen {
+  background-image: url('img/background/kontakttlo.jpg');
+  background-size: cover;
+  background-position: center;
+  padding-top: calc(var(--contact-pad-y) * var(--uy));
+  padding-bottom: calc(var(--contact-pad-y) * var(--uy));
+}
+
+.contact-top-bar {
+  display: flex;
+  align-items: center;
+  /* strzałka wyrównana do LEWEJ (od globalnego marginesu ekranu) */
+  justify-content: flex-start;
+  padding-left: calc(var(--contact-arrow-indent) * var(--ux));
+  margin-bottom: calc(var(--contact-arrow-gap) * var(--uy));
+}
+
+/* Strzałka powrotu na Kontakcie: POZIOMA (bez obrotu), przy lewej krawędzi. */
+.contact-top-bar .back-arrow {
+  margin-right: 0;
+}
+
+.contact-top-bar .back-arrow img {
+  transform: none;
+}
+
+.contact-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: calc(var(--contact-link-gap) * var(--ux));
+}
+
+.contact-link {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: calc(var(--fs-contact) * var(--ux));
+  line-height: 1.1;
+  color: #111;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* Emulacja blokady orientacji (spec §6) — patrz SCREEN_BEHAVIOUR.lockPortrait w app.js.
+   W poziomie kontener przyjmuje wymiary portrait i obraca się razem z urządzeniem,
+   dzięki czemu układ "przykleja się" do obudowy telefonu. */
+.stage.is-rotated {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100svh;
+  height: 100svw;
+  padding-bottom: 0;
+  transform-origin: 0 0;
+  /* W poziomie notch / home indicator wypadają na górnej i dolnej krawędzi
+     układu portrait, więc mapujemy je na padding pionowy ekranów. */
+  --sa-top: env(safe-area-inset-left, 0px);
+  --sa-bottom: env(safe-area-inset-right, 0px);
+}
+
+.stage.is-rotated.rot-ccw {
+  transform: rotate(-90deg) translateX(-100%);
+}
+
+.stage.is-rotated.rot-cw {
+  transform: rotate(90deg) translateY(-100%);
+  --sa-top: env(safe-area-inset-right, 0px);
+  --sa-bottom: env(safe-area-inset-left, 0px);
+}
+
+.stage.is-rotated .screen {
+  padding-top: max(calc(var(--screen-pad-y) * var(--uy)), var(--sa-top));
+  padding-bottom: max(calc(var(--screen-pad-y) * var(--uy)), var(--sa-bottom));
+}
+
+
+/* =====================================================================
+   WIGGLE ROOM — jak układ zachowuje się na różnych telefonach
+   ---------------------------------------------------------------------
+   Nic tu nie trzeba włączać: układ jest już "procentowy", bo każdy wymiar
+   to ułamek wysokości (--uy) albo szerokości (--ux) ekranu.
+   Np. pole obrazu 470uy = 470/812 = 57,9% wysokości ekranu na KAŻDYM
+   telefonie, a odstęp 20uy = 2,5% — proporcje nie rozjeżdżają się ani na
+   iPhone SE (375×667), ani na 20:9 Androidzie. Różni się tylko skala:
+   na wyższym ekranie te same odstępy są większe w pikselach, ale zawsze
+   w tej samej proporcji. Inną proporcję na wysokich ekranach uzyskasz
+   zmieniając liczbę w :root — nigdy w regułach.
+
+   Jak sprawdzić bez telefonu:
+   • Chrome/Edge: F12 -> ikona telefonu -> iPhone SE / iPhone 14 Pro Max
+   • Safari (Mac): menu Rozwój -> Wprowadź tryb responsywny
+   ===================================================================== */
+
+/* ---------------------------------------------------------------------
+   WARIANT A (opcjonalny): obraz kurczy się, gdy brakuje wysokości.
+   Domyślnie pole obrazu ma stałą wysokość (--artwork-height), więc na
+   bardzo niskim ekranie stos mógłby wypchnąć "o pracy" poza dół ekranu.
+   Po odkomentowaniu reguły pole zajmie całą wolną przestrzeń, ale nie
+   więcej niż --artwork-height i nie mniej niż --artwork-min-height.
+   Włączenie: dopisz do :root  --artwork-min-height: 320;  i zdejmij
+   komentarz z reguły poniżej.
+   --------------------------------------------------------------------- */
+/*
+.artwork-container {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: calc(var(--artwork-min-height) * var(--uy));
+  max-height: calc(var(--artwork-height) * var(--uy));
+}
+*/
+
+/* ---------------------------------------------------------------------
+   WARIANT B (opcjonalny): kompaktowy układ w poziomie.
+   Ekrany A–E są projektowane na pion (spec §2), a blokadę orientacji ma
+   tylko Kontakt. Gdybyś chciał pokazywać je też w poziomie, odkomentuj
+   poniższe — zwęża obraz i odstępy, żeby wszystko się mieściło.
+   --------------------------------------------------------------------- */
+/*
+@media (orientation: landscape) and (max-height: 500px) {
+  :root {
+    --gallery-top: 12;
+    --artwork-height: 260;
+    --artwork-gap: 8;
+    --about-link-height: 24;
+    --about-link-gap: 8;
+    --navigator-height: 32;
+    --navigator-gap: 12;
+  }
+}
+*/
+
+
+/* ---------------------------------------------------------------------
+   WARIANT C (opcjonalny): nagłówek jako zwarta grupa na środku ekranu.
+   Domyślnie "menu" stoi przy lewym marginesie, "en/pl" przy prawym, a brand
+   jest pomiędzy nimi — wtedy oba odstępy są wypadkową szerokości ekranu
+   (kręcisz nimi przez --header-inset-x i --header-brand-shift w :root).
+   Po odkomentowaniu poniższego wszystkie trzy napisy staną obok siebie
+   na środku, a --header-gap-x zadziała DOSŁOWNIE: tyle jednostek makiety
+   (1 = 1 px na 375×812) będzie między menu–brand i brand–en/pl.
+   --------------------------------------------------------------------- */
+/*
+:root {
+  --header-gap-x: 24;
+}
+
+#gallery-screen .header,
+#other-gallery-screen .header {
+  justify-content: center;
+}
+*/
+

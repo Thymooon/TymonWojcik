@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Test Viewport - Tymon Wójcik Portfolio</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      background: #f4f4f4;
+      color: #111;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .card {
+      background: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 12px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .row:last-child {
+      border-bottom: none;
+    }
+    .label {
+      font-weight: bold;
+    }
+    .value {
+      font-family: monospace;
+      color: #002b5b;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Viewport & Safe Areas</h1>
+  <div class="card">
+    <div class="row">
+      <span class="label">window.innerWidth:</span>
+      <span class="value" id="innerWidth">-</span>
+    </div>
+    <div class="row">
+      <span class="label">window.innerHeight:</span>
+      <span class="value" id="innerHeight">-</span>
+    </div>
+    <div class="row">
+      <span class="label">100svh (computed px):</span>
+      <span class="value" id="svh">-</span>
+    </div>
+    <div class="row">
+      <span class="label">100lvh (computed px):</span>
+      <span class="value" id="lvh">-</span>
+    </div>
+    <div class="row">
+      <span class="label">safe-area-inset-top:</span>
+      <span class="value" id="safeTop">-</span>
+    </div>
+    <div class="row">
+      <span class="label">safe-area-inset-bottom:</span>
+      <span class="value" id="safeBottom">-</span>
+    </div>
+    <div class="row">
+      <span class="label">safe-area-inset-left:</span>
+      <span class="value" id="safeLeft">-</span>
+    </div>
+    <div class="row">
+      <span class="label">safe-area-inset-right:</span>
+      <span class="value" id="safeRight">-</span>
+    </div>
+  </div>
+
+  <script>
+    function updateMetrics() {
+      document.getElementById('innerWidth').textContent = window.innerWidth + 'px';
+      document.getElementById('innerHeight').textContent = window.innerHeight + 'px';
+
+      // Computed 100svh and 100lvh
+      const divSvh = document.createElement('div');
+      divSvh.style.height = '100svh';
+      divSvh.style.position = 'absolute';
+      divSvh.style.visibility = 'hidden';
+      document.body.appendChild(divSvh);
+      document.getElementById('svh').textContent = divSvh.getBoundingClientRect().height + 'px';
+      document.body.removeChild(divSvh);
+
+      const divLvh = document.createElement('div');
+      divLvh.style.height = '100lvh';
+      divLvh.style.position = 'absolute';
+      divLvh.style.visibility = 'hidden';
+      document.body.appendChild(divLvh);
+      document.getElementById('lvh').textContent = divLvh.getBoundingClientRect().height + 'px';
+      document.body.removeChild(divLvh);
+
+      // Safe areas via computed style or getComputedStyle on root
+      const computedStyle = getComputedStyle(document.documentElement);
+      
+      function getEnv(name) {
+        const el = document.createElement('div');
+        el.style.paddingTop = `env(${name}, 0px)`;
+        document.body.appendChild(el);
+        const val = getComputedStyle(el).paddingTop;
+        document.body.removeChild(el);
+        return val;
+      }
+
+      document.getElementById('safeTop').textContent = getEnv('safe-area-inset-top');
+      document.getElementById('safeBottom').textContent = getEnv('safe-area-inset-bottom');
+      document.getElementById('safeLeft').textContent = getEnv('safe-area-inset-left');
+      document.getElementById('safeRight').textContent = getEnv('safe-area-inset-right');
+    }
+
+    window.addEventListener('resize', updateMetrics);
+    window.addEventListener('load', updateMetrics);
+    updateMetrics();
+  </script>
+</body>
+</html>

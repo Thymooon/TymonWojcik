@@ -1,482 +1,139 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <script>
-      (function() {
-        // Sprawdzamy szerokość ekranu (np. poniżej 768px to urządzenia mobilne)
-        // oraz opcjonalnie czy w userAgent znajduje się mobilne urządzenie
-        var isMobileSize = window.innerWidth <= 768;
-        var isMobileUserAgent = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-        if (isMobileSize || isMobileUserAgent) {
-          window.location.replace("mobile.html");
-        }
-      })();
-    </script>
-    <script src="puma.js"></script>
-    <script src="tealcar.js"></script>
-    <script src="image2.js"></script>
-    <script src="image3.js"></script>
-    <script src="image4.js"></script>
-    <script src="image5.js"></script>
-    <script src="image6.js"></script>
-    <script src="image7.js"></script>
-    <script src="image8.js"></script>
-    <script src="image9.js"></script>
-    <script src="image10.js"></script>
-    <script src="image11.js"></script>
-    <script src="image12.js"></script>
-    <script src="image13.js"></script>
-    <script src="image14.js"></script>
-    <script src="image15.js"></script>
   <meta charset="UTF-8">
-  <title>Malarstwo - Galeria</title>
-  <style>
-    body {
-      font-family: "Helvetica", monospace;
-      background-color: #ffffff;
-      color: #000000;
-      margin: 40px;
-      margin-left: 120px;
-    }
-    .edge {
-        margin-left: -100px;
-    }
-
-    .gallery-title {
-      font-size: 18px;
-      font-weight: normal;
-      margin-bottom: 20px;
-      margin-right: auto;
-      margin-left: 0px;
-    }
-    .info-title {
-        font-size: 12px;
-        font-weight: normal;
-       margin-bottom: 20px;
-       margin-right: 55px;
-    }
-      #info-name {
-        font-style: italic; /* Ten styl zadziała TYLKO i wyłącznie na element o id="info-tytul" */
-      }
-
-    .main-content {
-      display: flex;
-      gap: 10px;            /* Odstęp między tekstem a stage */
-      margin-top: 0px;        /* Odstęp od górnego paska z imieniem */
-      align-items: flex-start; /* Wyrównanie góry tekstu do góry zdjęcia */
-      width: 100%;
-    }
-
-    .left-title {
-      font-size: 24px;
-      flex-shrink: 0;          /* Blokuje kurczenie się tekstu przez flexbox */
-      width: 70px;            /* Stała szerokość kolumny z tekstem */
-      line-height: 78px;        /* Przyjemna dla oka odległość między liniami */
-      margin-top: 0px;
-      margin-left: 20px;
-    }
-
-    .stage {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: 1000px;
-      overflow: visible; /* DODANO: Pozwala obrazkowi wyjść poza kontener, gdy dasz duży margin-left */
-    }
-
-    /* Warstwa 1: Tekst ASCII w tle z płynnym przejściem koloru */
-    #ascii-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-      font-size: 5.1px;
-      line-height: 5px;
-      margin: 0;
-      white-space: pre;
-      user-select: none;
-      transition: color 0.5s ease; /* opcjonalne płynne przejście koloru */
-      margin-left: 0px;
-      margin-top: -20px;
-      pointer-events: none; /* Kursor i kliknięcia ignorują tę warstwę */
-    }
-
-    /* Warstwa 2: Przesuwający się kontener maskujący */
-    .img-revealer {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      overflow: hidden;
-      clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-    }
-
-    .img-revealer.loaded {
-      clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-      transition: clip-path 0.05s linear;
-    }
-
-    #view {
-      display: block;
-      width: auto;
-      max-width: 100%;
-      max-height: 550px;
-      transform: translateX(-100%);
-      transition: none;
-    }
-
-    .img-revealer.loaded #view {
-      transform: translateX(0);
-      transition: transform 0.05s linear;
-    }
-
-    /* Nawigacja */
-    .controls {
-      margin-top: 25px;
-      font-size: 14px;
-      position: relative;
-      z-index: 10; /* Zabezpieczenie przed przykryciem przez warstwy wyżej */
-      margin-left: 510px;
-    }
-
-    .btn {
-      cursor: pointer;
-      color: #0000ff;
-      text-decoration: underline;
-      margin-right: 15px;
-    }
-
-    .btn:hover {
-      color: #ff0000;
-    }
-
-    #counter {
-      margin-right: 15px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tymon Wójcik — Portfolio</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="stage">
+    <!-- Ekran A: Galeria -->
+    <div id="gallery-screen" class="screen active">
+      <header class="header">
+        <button id="header-menu" class="font-bold" aria-label="menu">menu</button>
+        <span class="brand font-bold">Tymon Wójcik</span>
+        <button id="header-lang" class="font-bold" aria-label="zmień język">en</button>
+      </header>
 
-  <div style="display: flex; gap: auto; align-items: center;">
-    <div class="gallery-title">Tymon Wójcik</div>
-    <span class="info-title" id="info-name">tytuł</span>
-    <span class="info-title" id="info-dimensions">wymiar</span>
-    <span class="info-title" id="info-technique">technika</span>
-    <span class="info-title" id="info-year">rok</span>
-    <span class="info-title" id="info-price">cena</span>
-  </div>
-    
-  <div class="main-content edge">
-    <div class="left-title">
-      <i>dm<br>
-      me<br>
-      if<br>
-      <u>int<br>
-      ere<br>
-      ste<br>
-      d</u></i><br>
-    </div>
-    
-    <div class="stage">
-      <pre id="ascii-bg"></pre>
-      <div id="revealer" class="img-revealer">
-        <img id="view" src="" alt="">
+      <div class="gallery-content">
+        <div class="artwork-container">
+          <img id="artwork-img" class="artwork-image" alt="Praca malarska">
+        </div>
+
+        <div class="about-link-container">
+          <button id="about-link" class="about-link">o pracy</button>
+        </div>
+
+        <nav class="navigator" aria-label="Nawigacja po pracach">
+          <button id="prev-btn" class="nav-btn" aria-label="poprzedni slajd">
+            <img src="img/heading/pl/nawigator.svg" alt="">
+          </button>
+          <span id="counter" class="counter" aria-live="polite">[1/2]</span>
+          <button id="next-btn" class="nav-btn next" aria-label="następny slajd">
+            <img src="img/heading/pl/nawigator.svg" alt="">
+          </button>
+        </nav>
       </div>
     </div>
+
+    <!-- Ekran B: O pracy -->
+    <div id="about-screen" class="screen about-screen">
+      <div class="about-top-bar">
+        <button id="about-back-btn" class="back-arrow" aria-label="wstecz">
+          <img src="img/heading/pl/strzalka.svg" alt="wstecz">
+        </button>
+      </div>
+
+      <div id="about-title-block" class="about-title-block"></div>
+      <div id="about-technique" class="about-technique"></div>
+      <div id="about-description" class="about-description"></div>
+
+      <div class="about-footer">
+        <span id="about-dim"></span>
+        <span id="about-year"></span>
+      </div>
+    </div>
+
+    <!-- Ekran C: Menu -->
+    <div id="menu-screen" class="screen menu-screen">
+      <div class="menu-top-bar">
+        <button id="menu-back-btn" class="back-arrow" aria-label="wstecz">
+          <img src="img/heading/pl/strzalka.svg" alt="wstecz">
+        </button>
+      </div>
+      <div class="menu-links-container">
+        <button id="menu-inne-prace" class="menu-item-btn" aria-label="Inne prace">
+          <img id="menu-img-inne-prace" data-svg="inne-prace.svg" data-alt-pl="Inne prace" data-alt-en="Inne prace" src="img/heading/pl/inne-prace.svg" alt="Inne prace">
+        </button>
+        <button id="menu-o-mnie" class="menu-item-btn" aria-label="O mnie / bio">
+          <img id="menu-img-o-mnie-bio" data-svg="o-mnie-bio.svg" data-alt-pl="O mnie / bio" data-alt-en="About me / bio" src="img/heading/pl/o-mnie-bio.svg" alt="O mnie / bio">
+        </button>
+        <button id="menu-kontakt" class="menu-item-btn" aria-label="Kontakt">
+          <img id="menu-img-kontakt" data-svg="kontakt.svg" data-alt-pl="Kontakt" data-alt-en="Contact" src="img/heading/pl/kontakt.svg" alt="Kontakt">
+        </button>
+      </div>
+    </div>
+
+    <!-- Ekran D: Inne prace -->
+    <div id="other-gallery-screen" class="screen other-gallery-screen">
+      <header class="header">
+        <button id="other-back-btn" class="back-arrow" aria-label="wstecz">
+          <img src="img/heading/pl/strzalka.svg" alt="wstecz">
+        </button>
+        <span class="brand font-bold">Tymon Wójcik</span>
+        <span style="width: 24px;"></span>
+      </header>
+
+      <div class="gallery-content">
+        <div class="artwork-container">
+          <img id="other-artwork-img" class="artwork-image" alt="Inna praca malarska">
+        </div>
+
+        <div class="about-link-container">
+          <button id="other-about-link" class="about-link">o pracy</button>
+        </div>
+
+        <nav class="navigator" aria-label="Nawigacja po innych pracach">
+          <button id="other-prev-btn" class="nav-btn" aria-label="poprzedni slajd">
+            <img src="img/heading/pl/nawigator.svg" alt="">
+          </button>
+          <span id="other-counter" class="counter" aria-live="polite">[1/1]</span>
+          <button id="other-next-btn" class="nav-btn next" aria-label="następny slajd">
+            <img src="img/heading/pl/nawigator.svg" alt="">
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Ekran E: O mnie / bio -->
+    <div id="bio-screen" class="screen bio-screen">
+      <div class="about-top-bar">
+        <button id="bio-back-btn" class="back-arrow" aria-label="wstecz">
+          <img src="img/heading/pl/strzalka.svg" alt="wstecz">
+        </button>
+      </div>
+      <div id="bio-text" class="bio-text"></div>
+    </div>
+
+    <!-- Ekran F: Kontakt -->
+    <div id="contact-screen" class="screen contact-screen">
+      <div class="contact-top-bar">
+        <button id="contact-back-btn" class="back-arrow" aria-label="wstecz">
+          <img src="img/heading/pl/strzalka.svg" alt="wstecz">
+        </button>
+      </div>
+      <div class="contact-content">
+        <a id="contact-email" class="contact-link font-bold" href="mailto:tymekw@icloud.com">tymekw@icloud.com</a>
+        <a id="contact-phone" class="contact-link font-bold" href="tel:737826710">737 826 710</a>
+        <a id="contact-insta" class="contact-link font-bold" href="https://instagram.com/tymekwojcik_">@tymekwojcik_</a>
+      </div>
+    </div>
+
+
   </div>
 
-  <div class="controls">
-    <span class="btn" onclick="changeSlide(-1)">[ &lt;&lt; PREV ]</span>
-    <span id="counter" onclick="changeSlide(1)" style="cursor: pointer;">1 / 1</span>
-    <span class="btn" onclick="changeSlide(1)">[ NEXT &gt;&gt; ]</span>
-  </div>
-
-  <script>
-    const images = [
-      "image0.jpg",
-                    "IMG_4089.jpg",
-                    "IMG_4093wersjha22.jpg",
-                    "dyptyk-z-oddali.jpg",
-      "Tymon_Wojcik_szybki_samochod_sweatshop_yamaszy_w_Indiach_i_pustostan_na_Zaciszu_kopia.jpg",
-                    "image2.jpg",
-                    "image3.jpg",
-                    "image4.jpg",
-                    "image5.jpg",
-                    "image6.jpg",
-                    "image7.jpg",
-                    "image8.jpg",
-                    "image9.jpg",
-                    "image10.jpg",
-                    "image11.jpg",
-                    "image12.jpg",
-                    "image13.jpg",
-                    "image14.jpg",
-                    "image15.jpg",
-                    
-    ];
-    
-    const asciiArt = [
-      {
-          name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji",
-          dimensions:"70 x 125 cm (cały dyptyk)",
-          technique:"olej na płotnie",
-          year:"2026",
-          price:"soon",
-        stageMarginLeft: "120px",
-        stageMarginTop: "100px",
-        color: "black",
-        text: puma
-      },
-                      {
-                          name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji (cz.1)",
-                          dimensions:"70 x 45 cm",
-                          technique:"olej na płotnie",
-                          year:"2026",
-                          price:"nd",
-                        stageMarginLeft: "240px",
-                        stageMarginTop: "0px",
-                        color: "black",
-                        text: puma
-                      },
-                      {
-                          name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji (cz.2)",
-                          dimensions:"70 x 70 cm",
-                          technique:"olej na płótnie",
-                          year:"2026",
-                          price:"nd",
-                        stageMarginLeft: "360px",
-                        stageMarginTop: "0px",
-                        color: "black",
-                        text: puma
-                      },
-                      {
-                          name: "Emigracja zarobkowa mojej matki w fordzie puma pierwszej generacji",
-                          dimensions:"70 x 125 cm",
-                          technique:"olej na płotnie",
-                          year:"2026",
-                          price:"soon",
-                        stageMarginLeft: "420px",
-                        stageMarginTop: "0px",
-                        color: "black",
-                        text: puma
-                      },
-      {
-          name: "Szybki samochód, Sweatshop yamaszy w Indiach i pustostan na Zaciszu",
-          dimensions:"100 x 70 cm",
-          technique:"olej na płotnie",
-          year:"2026",
-          price:"soon",
-        stageMarginLeft: "230px",
-        color: "black",
-        text: tealcar
-      },
-                      {
-                          name: "Gonitwa cyfrowych aut, wizerunki klaunów i koło fortuny z minionkiem z nadmorskiego sezonowego salonu hazardu",
-                          dimensions:"100 x 95 cm",
-                          technique:"olej na płotnie",
-                          year:"2026",
-                          price:"soon",
-                        stageMarginLeft: "370px",
-                        color: "black",
-                        text: image2
-                      },
-                      {
-                          name: "Samochodzik w mieście Sega",
-                          dimensions:"140 x 80 cm",
-                          technique:"olej na płotnie",
-                          year:"2026",
-                          price:"soon",
-                        stageMarginLeft: "150px",
-                        color: "black",
-                        text: image3
-                      },
-                      {
-                          name: "Pieniądze, przydrożny krzyż na Zaciszu, cyfrowy pachołek",
-                          dimensions:"120 x 85 cm",
-                          technique:"olej na płotnie",
-                          year:"2026",
-                          price:"soon",
-                        stageMarginLeft: "245px",
-                        color: "black",
-                        text: image4
-                      },
-                      {
-                          name: "Stoję przed automatem z pluszowymi zabawkami",
-                          dimensions:"90 x 60 cm",
-                          technique:"olej na płótnie",
-                          year:"2025",
-                          price:"soon",
-                        stageMarginLeft: "420px",
-                        color: "black",
-                        text: image5
-                      },
-                      {
-                          name: "One clip the end",
-                          dimensions:"110 x 80 cm",
-                          technique:"olej na płotnie",
-                          year:"2026",
-                          price:"soon",
-                        stageMarginLeft: "250px",
-                        color: "black",
-                        text: image6
-                      },
-                      {
-                          name: "Szmal 2",
-                          dimensions:"120 x 40 cm",
-                          technique:"olej na płótnie",
-                          year:"2026",
-                          price:"sold",
-                          stageMarginTop: "100px",
-                        stageMarginLeft: "120px",
-                        color: "black",
-                        text: image7
-                      },
-                      {
-                          name: "Szmal",
-                          dimensions:"130 x 80 cm",
-                          technique:"olej na płótnie",
-                          year:"2026",
-                          price:"sold",
-                        stageMarginLeft: "220px",
-                        color: "black",
-                        text: image8
-                      },
-                      {
-                          name: "Żetony",
-                          dimensions:"140 x 90 cm",
-                          technique:"olej na płótnie",
-                          year:"2026",
-                          price:"soon",
-                        stageMarginLeft: "210px",
-                        color: "black",
-                        text: image9
-                      },
-                      {
-                          name: "10ZŁ",
-                          dimensions:"40 x 20 cm",
-                          technique:"olej na płótnie",
-                          year:"2026",
-                          price:"sold",
-                        stageMarginLeft: "120px",
-                        color: "black",
-                        text: image10
-                      },
-                      {
-                          name: "Młody ołbińczyk siedzi na końcu autobusu tak jak jego ojciec",
-                          dimensions:"75 x 110 cm",
-                          technique:"olej na płótnie",
-                          year:"2026",
-                          price:"soon",
-                        stageMarginLeft: "430px",
-                        color: "black",
-                        text: image11
-                      },
-                      {
-                          name: "54 29 20,352N 18 33 56,22E",
-                          dimensions:"120 x 90 cm",
-                          technique:"olej na płótnie",
-                          year:"2025",
-                          price:"soon",
-                        stageMarginLeft: "420px",
-                        color: "black",
-                        text: image12
-                      },
-                      {
-                          name: "Does death come alone or in eager reinforcements",
-                          dimensions:"100 x 140 cm",
-                          technique:"olej na płótnie",
-                          year:"2025",
-                          price:"sold",
-                        stageMarginLeft: "248px",
-                        color: "black",
-                        text: image13
-                      },
-                      {
-                          name: "Bez tytułu",
-                          dimensions:"140 x 130 cm",
-                          technique:"olej na płótnie",
-                          year:"2025",
-                          price:"soon",
-                        stageMarginLeft: "400px",
-                        color: "black",
-                        text: image14
-                      },
-                      {
-                          name: "Bez tytułu",
-                          dimensions:"190 x 120",
-                          technique:"olej na płótnie",
-                          year:"2024",
-                          price:"soon",
-                        stageMarginLeft: "460px",
-                        color: "black",
-                        text: image15
-                      },
-    ];
-
-    let index = 0;
-
-    function loadSlide() {
-      const revealer = document.getElementById("revealer");
-      const img = document.getElementById("view");
-      const ascii = document.getElementById("ascii-bg");
-      const nameEl = document.getElementById("info-name");
-      const dimensionsEl = document.getElementById("info-dimensions");
-      const techniqueEl = document.getElementById("info-technique");
-      const yearEl = document.getElementById("info-year");
-      const priceEl = document.getElementById("info-price");
-      
-      revealer.style.transition = "none";
-      revealer.classList.remove("loaded");
-      img.src = images[index];
-
-      // Bezpieczne przypisanie parametrów z obiektu
-      if (asciiArt[index]) {
-        ascii.innerText = asciiArt[index].text;
-        ascii.style.color = asciiArt[index].color || "#000000";
-        
-        // Aplikujemy margines bezpośrednio na kontener ze zdjęciem (.img-revealer)
-        revealer.style.marginLeft = asciiArt[index].stageMarginLeft || "0px";
-        revealer.style.marginTop = asciiArt[index].stageMarginTop || "0px";
-        nameEl.innerText = asciiArt[index].name || "kupka Tymka";
-        dimensionsEl.innerText = asciiArt[index].dimensions || "ego x 15.24 cm";
-        techniqueEl.innerText = asciiArt[index].technique || "siku Tymka";
-        yearEl.innerText = asciiArt[index].year || "XII wiek";
-        priceEl.innerText = asciiArt[index].price || "sold";
-        
-      }
-
-      document.getElementById("counter").innerText = (index + 1) + " / " + images.length;
-
-      setTimeout(() => {
-        revealer.classList.add("loaded");
-      }, 50);
-    }
-
-    // NAPRAWIONO: Przywrócono usuniętą wcześniej funkcję nawigacji
-    function changeSlide(direction) {
-      index += direction;
-      if (index < 0) index = images.length - 1;
-      if (index >= images.length) index = 0;
-      loadSlide();
-    }
-
-    loadSlide();
-  </script>
-<script>
-      // Tutaj masz swoje dotychczasowe funkcje (loadSlide, changeSlide itp.)
-
-      // KOD PRELOADUJĄCY:
-      function preloadImages() {
-        images.forEach((src) => {
-          const img = new Image();
-          img.src = src;
-        });
-      }
-
-      // Uruchomienie preloadu po załadowaniu strony
-      window.addEventListener('load', preloadImages);
-    </script>
+  <script src="data/works.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
-
