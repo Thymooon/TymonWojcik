@@ -18,7 +18,7 @@ window.PORTFOLIO_DATA = {
   "works": [
     {
       "id": "start-01",
-      "image": "img/works/main-gallery/img-4437.webp",
+      "image": "img/works/main-gallery/tomas.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Tytuł obrazu", "linijka 2", "linijka 3"],
@@ -56,7 +56,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-03",
-      "image": "img/works/main-gallery/szybki-samochod-w-indiach.webp",
+      "image": "img/works/main-gallery/10-zl.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Szybki samochód, sweatshop yamaszy", "w Indiach i pustostan", "na Zaciszu"],
@@ -75,7 +75,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-04",
-      "image": "img/works/main-gallery/gonitwa-cyfrowych-aut.webp",
+      "image": "img/works/main-gallery/szmal.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Gonitwa cyfrowych aut, wizerunki", "klaunów i koło fortuny", "z minionkiem"],
@@ -94,7 +94,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-05",
-      "image": "img/works/main-gallery/img-2926.webp",
+      "image": "img/works/main-gallery/szmal-2.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Gonitwa monet", "w nadmorskim", "salonie hazardu"],
@@ -113,7 +113,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-06",
-      "image": "img/works/main-gallery/img-2954.webp",
+      "image": "img/works/main-gallery/zetony.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Portret zbiorowy", "monet"],
@@ -132,7 +132,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-07",
-      "image": "img/works/main-gallery/img-2957.webp",
+      "image": "img/works/main-gallery/antycypacja-nagrody.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["One clip the end", "chwytak z nagrodami"],
@@ -151,7 +151,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-08",
-      "image": "img/works/main-gallery/img-2935.webp",
+      "image": "img/works/main-gallery/one-clip-the-end.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Obiekt monitorowany", "nadmorski pawilon"],
@@ -170,7 +170,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-09",
-      "image": "img/works/main-gallery/img-2958.webp",
+      "image": "img/works/main-gallery/szybki-samochod-w-indiach.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Powierzchnia wody", "panorama"],
@@ -189,7 +189,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-10",
-      "image": "img/works/main-gallery/boja.webp",
+      "image": "img/works/main-gallery/gonitwa-cyfrowych-aut.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Kąpiel z boją", "widok z wody"],
