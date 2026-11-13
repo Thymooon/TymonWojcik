@@ -37,7 +37,7 @@ window.PORTFOLIO_DATA = {
     },
     {
       "id": "start-02",
-      "image": "img/works/main-gallery/emigracja-matki.webp",
+      "image": "img/works/main-gallery/emigracja-matki-puma.webp",
       "focus": "50% 50%",
       "title": {
         "pl": ["Emigracja zarobkowa mojej matki", "w ford puma", "pierwszej generacji"],
